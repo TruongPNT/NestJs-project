@@ -31,4 +31,12 @@ export class UserService {
   remove(id: string) {
     return this.usersRepository.destroyProduct(id);
   }
+
+  verifyEmail(email: string) {
+    return this.usersRepository.verifyEmail(email);
+  }
+
+  updatePassword(email: string, newPassword: string) {
+    return this.usersRepository.updatePassword(email, newPassword);
+  }
 }

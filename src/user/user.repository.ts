@@ -1,7 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserRole } from './dto/user-status.enum';
+import { UserRole } from './dto/user-roles.enum';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -79,6 +79,27 @@ export class UsersRepository extends Repository<User> {
         };
       }
       return new BadRequestException('Sever error');
+    }
+  }
+  async verifyEmail(email: string) {
+    const user = await this.findOne({ email: email });
+    if (user) {
+      return await this.save({
+        ...user,
+        isActive: true,
+      });
+    }
+  }
+  async updatePassword(email: string, newPassword: string) {
+    try {
+      const user = await this.findOne({ email: email });
+      if (user) {
+        const salt = await bcrypt.genSalt();
+        const hasPassword = await bcrypt.hash(newPassword, salt);
+        return await this.save({ ...user, password: hasPassword });
+      }
+    } catch (error) {
+      throw new BadRequestException('Sever error');
     }
   }
 }

@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.stategy';
 import { UserModule } from 'src/user/user.module';
 import { ConfigModule } from '@nestjs/config';
+import { SendmailModule } from 'src/sendmail/sendmail.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ConfigModule } from '@nestjs/config';
       secret: process.env.ACCESS_TOKEN_SECRET,
     }),
     UserModule,
+    SendmailModule,
     NestjsFormDataModule,
   ],
   providers: [AuthService, JwtStrategy],

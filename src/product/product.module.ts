@@ -4,7 +4,6 @@ import { ProductController } from './product.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsRepository } from './product.repository';
 import { NestjsFormDataModule } from 'nestjs-form-data';
-
 @Module({
   imports: [
     TypeOrmModule.forFeature([ProductsRepository]),

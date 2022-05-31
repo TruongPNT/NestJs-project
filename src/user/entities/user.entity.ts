@@ -1,4 +1,4 @@
-import { UserRole } from 'src/user/dto/user-status.enum';
+import { UserRole } from 'src/user/dto/user-roles.enum';
 import {
   BaseEntity,
   Column,
@@ -29,7 +29,11 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
-  @Column()
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.USER,
+  })
   role: UserRole;
 
   @Column()

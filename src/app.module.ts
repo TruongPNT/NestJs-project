@@ -6,6 +6,9 @@ import { AppService } from './app.service';
 import { ProductModule } from './product/product.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { SendmailModule } from './sendmail/sendmail.module';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './authorization/roles.guard';
 
 @Module({
   imports: [
@@ -25,6 +28,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     UserModule,
     AuthModule,
+    SendmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

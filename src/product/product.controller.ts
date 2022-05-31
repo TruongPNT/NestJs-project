@@ -10,7 +10,6 @@ import {
   UploadedFile,
   UseFilters,
   UseGuards,
-  Req,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -20,7 +19,8 @@ import { extname } from 'path';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { HttpExceptionFilter } from '../filter/http-exception.filter';
 import { AuthGuard } from '@nestjs/passport';
-import { request } from 'https';
+import { Roles } from 'src/authorization/roles.decorator';
+import { UserRole } from 'src/user/dto/user-roles.enum';
 
 @Controller('products')
 @UseFilters(HttpExceptionFilter)
@@ -29,6 +29,7 @@ export class ProductController {
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
+  @Roles(UserRole.ADMIN)
   @UseInterceptors(
     FileInterceptor('product_img', {
       storage: diskStorage({
