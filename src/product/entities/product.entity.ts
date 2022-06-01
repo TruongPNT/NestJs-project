@@ -1,12 +1,16 @@
+import { ImgDetail } from '../../img-detail/entities/img-detail.entity';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Category } from 'src/category/entities/category.entity';
 
 @Entity()
 export class Product extends BaseEntity {
@@ -25,6 +29,9 @@ export class Product extends BaseEntity {
   @Column()
   sell_price: number;
 
+  @Column({ default: true })
+  status: boolean;
+
   @Column('integer')
   quantity: number;
 
@@ -42,4 +49,10 @@ export class Product extends BaseEntity {
 
   @DeleteDateColumn()
   deleted_at?: Date;
+
+  @OneToMany(() => ImgDetail, (imgdetail) => imgdetail.product)
+  imgDetail: ImgDetail[];
+
+  @ManyToOne(() => Category, (category) => category.products)
+  category: Category;
 }

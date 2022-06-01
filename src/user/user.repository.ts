@@ -62,7 +62,7 @@ export class UsersRepository extends Repository<User> {
       throw new BadRequestException('Sever error');
     }
   }
-  async destroyProduct(id: string) {
+  async destroyUser(id: string) {
     try {
       const user = await this.findOne({ id: id });
       if (user) {

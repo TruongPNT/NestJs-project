@@ -9,6 +9,9 @@ import { AuthModule } from './auth/auth.module';
 import { SendmailModule } from './sendmail/sendmail.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './authorization/roles.guard';
+import { ImgDetailModule } from './img-detail/img-detail.module';
+import { VoucherModule } from './voucher/voucher.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -29,6 +32,9 @@ import { RolesGuard } from './authorization/roles.guard';
     UserModule,
     AuthModule,
     SendmailModule,
+    ImgDetailModule,
+    VoucherModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

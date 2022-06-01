@@ -1,45 +1,11 @@
 import { Product } from './entities/product.entity';
 import { Repository, EntityRepository } from 'typeorm';
-import { CreateProductDto } from './dto/create-product.dto';
-import * as randomsString from 'randomstring';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { UpdateProductDto } from './dto/update-product.dto';
 import * as fs from 'fs';
 
 @EntityRepository(Product)
 export class ProductsRepository extends Repository<Product> {
-  async createProduct(
-    createProductDto: CreateProductDto,
-    file: Express.Multer.File,
-  ) {
-    try {
-      const barcode = randomsString.generate({
-        length: 6,
-        charset: 'alphabetic',
-        capitalization: 'uppercase',
-      });
-      const path = file.path;
-      const { name, import_price, sell_price, description, quantity } =
-        createProductDto;
-      const product = this.create({
-        name,
-        import_price,
-        sell_price,
-        description,
-        quantity,
-        barcode,
-        product_img: path,
-      });
-      await this.save(product);
-      return {
-        code: 200,
-        message: 'Create product successful',
-        data: product,
-      };
-    } catch (error) {
-      throw new BadRequestException('Sever error');
-    }
-  }
   async updateProduct(
     id: string,
     updateProductDto: UpdateProductDto,

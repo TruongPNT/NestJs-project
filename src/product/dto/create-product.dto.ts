@@ -20,4 +20,7 @@ export class CreateProductDto {
 
   @IsString()
   description: string;
+
+  @IsString()
+  categoryId: string;
 }

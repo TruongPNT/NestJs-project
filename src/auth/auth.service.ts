@@ -12,7 +12,6 @@ import * as bcrypt from 'bcrypt';
 import { ForgetPasswordDto } from './dto/forget-password.dto';
 @Injectable()
 export class AuthService {
-  userRepository: any;
   constructor(
     private userService: UserService,
     private jwtService: JwtService,

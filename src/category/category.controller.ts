@@ -6,34 +6,32 @@ import {
   Patch,
   Param,
   Delete,
-  UseInterceptors,
-  UploadedFile,
   UseFilters,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
-import { ProductService } from './product.service';
-import { CreateProductDto } from './dto/create-product.dto';
+import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { FormDataRequest } from 'nestjs-form-data';
 import { extname } from 'path';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { HttpExceptionFilter } from '../filter/http-exception.filter';
-import { AuthGuard } from '@nestjs/passport';
-import { Roles } from 'src/authorization/roles.decorator';
-import { UserRole } from 'src/user/dto/user-roles.enum';
+import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
+import { CategoryService } from './category.service';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
-@Controller('products')
-@UseGuards(AuthGuard('jwt'))
+@Controller('category')
 @UseFilters(HttpExceptionFilter)
-export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+@UseGuards(AuthGuard('jwt'))
+export class CategoryController {
+  constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  @Roles(UserRole.ADMIN)
   @UseInterceptors(
-    FileInterceptor('product_img', {
+    FileInterceptor('banner', {
       storage: diskStorage({
-        destination: './uploads/product-img',
+        destination: './uploads/banner-img',
         filename: (req, file, cb) => {
           // Generating a 32 random chars long string
           const randomName = Array(32)
@@ -47,30 +45,27 @@ export class ProductController {
     }),
   )
   create(
-    @Body() createProductDto: CreateProductDto,
+    @Body() createCategoryDto: CreateCategoryDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.productService.createProduct(createProductDto, file);
+    return this.categoryService.create(createCategoryDto, file);
   }
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
   findAll() {
-    return this.productService.findAll();
+    return this.categoryService.findAll();
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard('jwt'))
   findOne(@Param('id') id: string) {
-    return this.productService.findOne(id);
+    return this.categoryService.findOne(id);
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(
-    FileInterceptor('product_img', {
+    FileInterceptor('banner', {
       storage: diskStorage({
-        destination: './uploads/product-img',
+        destination: './uploads/banner-img',
         filename: (req, file, cb) => {
           // Generating a 32 random chars long string
           const randomName = Array(32)
@@ -85,15 +80,14 @@ export class ProductController {
   )
   update(
     @Param('id') id: string,
-    @Body() updateProductDto: UpdateProductDto,
+    @Body() updateCategoryDto: UpdateCategoryDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.productService.update(id, updateProductDto, file);
+    return this.categoryService.update(id, updateCategoryDto, file);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard('jwt'))
   remove(@Param('id') id: string) {
-    return this.productService.remove(id);
+    return this.categoryService.remove(id);
   }
 }

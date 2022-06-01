@@ -11,29 +11,26 @@ import {
   UseFilters,
   UseGuards,
 } from '@nestjs/common';
-import { ProductService } from './product.service';
-import { CreateProductDto } from './dto/create-product.dto';
+import { ImgDetailService } from './img-detail.service';
+import { CreateImgDetailDto } from './dto/create-img-detail.dto';
+import { UpdateImgDetailDto } from './dto/update-img-detail.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { HttpExceptionFilter } from '../filter/http-exception.filter';
+import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 import { AuthGuard } from '@nestjs/passport';
-import { Roles } from 'src/authorization/roles.decorator';
-import { UserRole } from 'src/user/dto/user-roles.enum';
 
-@Controller('products')
-@UseGuards(AuthGuard('jwt'))
+@Controller('img-detail')
 @UseFilters(HttpExceptionFilter)
-export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+@UseGuards(AuthGuard('jwt'))
+export class ImgDetailController {
+  constructor(private readonly imgDetailService: ImgDetailService) {}
 
   @Post()
-  @Roles(UserRole.ADMIN)
   @UseInterceptors(
-    FileInterceptor('product_img', {
+    FileInterceptor('img_detail', {
       storage: diskStorage({
-        destination: './uploads/product-img',
+        destination: './uploads/img-detail',
         filename: (req, file, cb) => {
           // Generating a 32 random chars long string
           const randomName = Array(32)
@@ -47,30 +44,27 @@ export class ProductController {
     }),
   )
   create(
-    @Body() createProductDto: CreateProductDto,
+    @Body() createImgDetailDto: CreateImgDetailDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.productService.createProduct(createProductDto, file);
+    return this.imgDetailService.create(createImgDetailDto, file);
   }
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
   findAll() {
-    return this.productService.findAll();
+    return this.imgDetailService.findAll();
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard('jwt'))
   findOne(@Param('id') id: string) {
-    return this.productService.findOne(id);
+    return this.imgDetailService.findOne(id);
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(
-    FileInterceptor('product_img', {
+    FileInterceptor('img_detail', {
       storage: diskStorage({
-        destination: './uploads/product-img',
+        destination: './uploads/img-detail',
         filename: (req, file, cb) => {
           // Generating a 32 random chars long string
           const randomName = Array(32)
@@ -85,15 +79,14 @@ export class ProductController {
   )
   update(
     @Param('id') id: string,
-    @Body() updateProductDto: UpdateProductDto,
+    @Body() updateImgDetailDto: UpdateImgDetailDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.productService.update(id, updateProductDto, file);
+    return this.imgDetailService.update(id, updateImgDetailDto, file);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard('jwt'))
   remove(@Param('id') id: string) {
-    return this.productService.remove(id);
+    return this.imgDetailService.remove(id);
   }
 }

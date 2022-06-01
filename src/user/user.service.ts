@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
 import { UsersRepository } from './user.repository';
 
 @Injectable()
@@ -29,7 +28,7 @@ export class UserService {
   }
 
   remove(id: string) {
-    return this.usersRepository.destroyProduct(id);
+    return this.usersRepository.destroyUser(id);
   }
 
   verifyEmail(email: string) {

@@ -7,15 +7,18 @@ import {
   Param,
   Delete,
   UseFilters,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 import { FormDataRequest } from 'nestjs-form-data';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 @UseFilters(HttpExceptionFilter)
+@UseGuards(AuthGuard('jwt'))
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
