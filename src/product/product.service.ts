@@ -8,7 +8,7 @@ import * as randomsString from 'randomstring';
 @Injectable()
 export class ProductService {
   constructor(
-    private productRepository: ProductsRepository,
+    public productRepository: ProductsRepository,
     private categoryService: CategoryService,
   ) {}
   async createProduct(

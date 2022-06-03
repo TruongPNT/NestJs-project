@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsRepository } from './product.repository';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { CategoryModule } from 'src/category/category.module';
+import { CategoryService } from 'src/category/category.service';
+import { CategoryRepository } from 'src/category/category.repository';
 @Module({
   imports: [
     TypeOrmModule.forFeature([ProductsRepository]),

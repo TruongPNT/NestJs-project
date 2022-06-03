@@ -12,6 +12,8 @@ import { RolesGuard } from './authorization/roles.guard';
 import { ImgDetailModule } from './img-detail/img-detail.module';
 import { VoucherModule } from './voucher/voucher.module';
 import { CategoryModule } from './category/category.module';
+import { ItemFlashsalesModule } from './item-flashsales/item-flashsales.module';
+import { FlashsalesModule } from './flashsales/flashsales.module';
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import { CategoryModule } from './category/category.module';
     ImgDetailModule,
     VoucherModule,
     CategoryModule,
+    ItemFlashsalesModule,
+    FlashsalesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

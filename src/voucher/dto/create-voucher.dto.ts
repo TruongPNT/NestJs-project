@@ -25,7 +25,7 @@ export class CreateVoucherDto {
   @Type(() => Date)
   startTime: Date;
 
-  @Type(() => Date)
   @IsDate()
+  @Type(() => Date)
   endTime: Date;
 }

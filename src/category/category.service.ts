@@ -5,7 +5,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoryService {
-  constructor(private readonly categoryRepository: CategoryRepository) {}
+  constructor(public readonly categoryRepository: CategoryRepository) {}
   create(createCategoryDto: CreateCategoryDto, file: Express.Multer.File) {
     return this.categoryRepository.createCategory(createCategoryDto, file);
   }

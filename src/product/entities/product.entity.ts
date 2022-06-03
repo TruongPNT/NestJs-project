@@ -11,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Category } from 'src/category/entities/category.entity';
+import { ItemFlashsale } from 'src/item-flashsales/entities/item-flashsale.entity';
 
 @Entity()
 export class Product extends BaseEntity {
@@ -55,4 +56,7 @@ export class Product extends BaseEntity {
 
   @ManyToOne(() => Category, (category) => category.products)
   category: Category;
+
+  @OneToMany(() => ItemFlashsale, (itemFlashsale) => itemFlashsale.product)
+  itemFlashsale: ItemFlashsale[];
 }

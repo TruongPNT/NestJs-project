@@ -11,13 +11,15 @@ export class VoucherRepository extends Repository<Voucher> {
   async createVoucher(createVoucherDto: CreateVoucherDto) {
     try {
       const { startTime, endTime } = createVoucherDto;
-      if (startTime.getTime < dateNow.getTime)
+      const start = new Date(startTime);
+      const end = new Date(endTime);
+      if (start.getTime() < dateNow.getTime())
         return {
           code: 404,
           message: 'Thời điểm bắt đầu không thể nhỏ hơn hiện tại',
         };
 
-      if (endTime.getTime < startTime.getTime)
+      if (end.getTime() < start.getTime())
         return {
           code: 404,
           message: 'Thời điểm kết thúc không thể nhỏ hơn thời điểm bắt đầu',
@@ -36,32 +38,36 @@ export class VoucherRepository extends Repository<Voucher> {
     try {
       const voucher = await this.findOne(id);
       const { startTime, endTime } = updateVoucherDto;
+      const start = new Date(startTime);
+      const end = new Date(endTime);
+      const voucherEndTime = new Date(voucher.endTime);
+      const voucherStartTime = new Date(voucher.startTime);
       if (startTime && endTime) {
-        if (startTime.getTime < dateNow.getTime)
+        if (start.getTime() < dateNow.getTime())
           return {
             code: 404,
             message: 'Thời điểm bắt đầu không thể nhỏ hơn hiện tại',
           };
 
-        if (endTime.getTime < startTime.getTime)
+        if (end.getTime() < start.getTime())
           return {
             code: 404,
             message: 'Thời điểm kết thúc không thể nhỏ hơn thời điểm bắt đầu',
           };
       }
       if (startTime && !endTime) {
-        if (startTime.getTime < dateNow.getTime)
+        if (start.getTime() < dateNow.getTime())
           return { code: 404, message: 'Thời điểm bắt đầu không hợp lệ' };
-        if (startTime.getTime > voucher.endTime.getTime)
+        if (start.getTime() > voucherEndTime.getTime())
           return {
             code: 404,
             message: 'Thời điểm bắt đầu không được vượt quá thời điểm kết thúc',
           };
       }
       if (endTime && !startTime) {
-        if (endTime.getTime < dateNow.getTime)
+        if (end.getTime() < dateNow.getTime())
           return { code: 404, message: 'Thời điểm kết thúc không hợp lệ' };
-        if (endTime.getTime < voucher.startTime.getTime)
+        if (end.getTime() < voucherStartTime.getTime())
           return {
             code: 404,
             message:
