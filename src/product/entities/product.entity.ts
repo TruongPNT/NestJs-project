@@ -1,3 +1,4 @@
+import { OrderDetail } from './../../order_detail/entities/order_detail.entity';
 import { ImgDetail } from '../../img-detail/entities/img-detail.entity';
 import {
   BaseEntity,
@@ -30,8 +31,8 @@ export class Product extends BaseEntity {
   @Column()
   sell_price: number;
 
-  @Column({ default: true })
-  status: boolean;
+  @Column({ default: false })
+  is_sale: boolean;
 
   @Column('integer')
   quantity: number;
@@ -59,4 +60,7 @@ export class Product extends BaseEntity {
 
   @OneToMany(() => ItemFlashsale, (itemFlashsale) => itemFlashsale.product)
   itemFlashsale: ItemFlashsale[];
+
+  @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.product)
+  order_details: OrderDetail[];
 }

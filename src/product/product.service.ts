@@ -4,6 +4,10 @@ import { ProductsRepository } from './product.repository';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CategoryService } from 'src/category/category.service';
 import * as randomsString from 'randomstring';
+import { async } from 'rxjs';
+import { getConnection } from 'typeorm';
+import { ItemFlashsale } from 'src/item-flashsales/entities/item-flashsale.entity';
+import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductService {
@@ -66,10 +70,6 @@ export class ProductService {
       relations: ['imgDetail', 'category'],
       where: { id },
     });
-    // .createQueryBuilder('p')
-    // .innerJoinAndSelect('img_detail', 'imgd', 'p.id = imgd.productId')
-    // .where('p.id = :id', { id: id })
-    // .getOne();
   }
 
   update(
@@ -82,5 +82,27 @@ export class ProductService {
 
   remove(id: string) {
     return this.productRepository.destroyProduct(id);
+  }
+
+  async getItemWithFlashsale(id: string) {
+    const timeNow = new Date();
+    const query = await getConnection()
+      .createQueryBuilder()
+      .select('product')
+      .addSelect('item_flashsale')
+      .addSelect('flashsale')
+      .addSelect('product.sell_price', 'price')
+      .addSelect(
+        '(product.sell_price*(100-item_flashsale.discount))/100',
+        'realPrice',
+      )
+      .from(Product, 'product')
+      .leftJoin('product.itemFlashsale', 'item_flashsale')
+      .leftJoin('item_flashsale.flashsale', 'flashsale')
+      .where('product.id = :id', { id })
+      .andWhere('flashsale.startSale < :timeNow', { timeNow })
+      .andWhere('flashsale.endSale > :timeNow', { timeNow })
+      .execute();
+    return query[0];
   }
 }

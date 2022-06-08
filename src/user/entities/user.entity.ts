@@ -1,3 +1,4 @@
+import { Order } from 'src/order/entities/order.entity';
 import { UserRole } from 'src/user/dto/user-roles.enum';
 import {
   BaseEntity,
@@ -5,6 +6,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -47,4 +49,7 @@ export class User extends BaseEntity {
 
   @DeleteDateColumn()
   deleted_at?: Date;
+
+  @OneToMany(() => Order, (order: Order) => order.user)
+  orders: Order[];
 }

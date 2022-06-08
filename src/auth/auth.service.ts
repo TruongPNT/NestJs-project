@@ -78,7 +78,7 @@ export class AuthService {
         const email = result.email;
         const payload: JwtPayload = { email };
         const accessToken = await this.jwtService.sign(payload, {
-          expiresIn: '1h',
+          expiresIn: '24h',
         });
         return {
           code: 200,

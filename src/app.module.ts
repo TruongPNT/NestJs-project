@@ -14,6 +14,8 @@ import { VoucherModule } from './voucher/voucher.module';
 import { CategoryModule } from './category/category.module';
 import { ItemFlashsalesModule } from './item-flashsales/item-flashsales.module';
 import { FlashsalesModule } from './flashsales/flashsales.module';
+import { OrderModule } from './order/order.module';
+import { OrderDetailModule } from './order_detail/order_detail.module';
 
 @Module({
   imports: [
@@ -39,6 +41,8 @@ import { FlashsalesModule } from './flashsales/flashsales.module';
     CategoryModule,
     ItemFlashsalesModule,
     FlashsalesModule,
+    OrderModule,
+    OrderDetailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

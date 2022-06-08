@@ -27,10 +27,6 @@ export class ItemFlashsalesService {
           message:
             'Số lượng flashSale không được lớn hơn số lượng trong kho của sản phẩm ',
         };
-      if (!product) return { code: 404, message: 'Product not found' };
-      // trừ số lượng trong kho nếu như số lượng flash sale đạt đủ điều kiện
-      product.quantity -= quantity;
-      await this.productService.productRepository.save(product);
     }
     return this.itemFlashsaleRepository.createItemFlashSale(
       createItemFlashsaleDto,

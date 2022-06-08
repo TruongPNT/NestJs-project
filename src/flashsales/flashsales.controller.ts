@@ -11,6 +11,7 @@ import { FlashsalesService } from './flashsales.service';
 import { CreateFlashsaleDto } from './dto/create-flashsale.dto';
 import { UpdateFlashsaleDto } from './dto/update-flashsale.dto';
 import { FormDataRequest } from 'nestjs-form-data';
+import { Console } from 'console';
 
 @Controller('flashsales')
 export class FlashsalesController {

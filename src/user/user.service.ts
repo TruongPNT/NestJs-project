@@ -5,7 +5,7 @@ import { UsersRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(private usersRepository: UsersRepository) {}
+  constructor(public usersRepository: UsersRepository) {}
 
   create(createUserDto: CreateUserDto) {
     return this.usersRepository.createUser(createUserDto);

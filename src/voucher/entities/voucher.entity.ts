@@ -1,9 +1,11 @@
+import { Order } from 'src/order/entities/order.entity';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -50,4 +52,7 @@ export class Voucher extends BaseEntity {
 
   @DeleteDateColumn()
   deleted_at?: Date;
+
+  @OneToMany(() => Order, (order: Order) => order.voucher)
+  orders: Order[];
 }

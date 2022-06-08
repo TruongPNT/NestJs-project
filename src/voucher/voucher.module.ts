@@ -12,5 +12,6 @@ import { VoucherRepository } from './voucher.repository';
   ],
   controllers: [VoucherController],
   providers: [VoucherService],
+  exports: [VoucherService],
 })
 export class VoucherModule {}

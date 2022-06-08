@@ -21,8 +21,11 @@ import { HttpExceptionFilter } from '../filter/http-exception.filter';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from 'src/authorization/roles.decorator';
 import { UserRole } from 'src/user/dto/user-roles.enum';
+import { ApiTags, ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('products')
+@ApiTags('Product')
+@ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 @UseFilters(HttpExceptionFilter)
 export class ProductController {
@@ -46,6 +49,7 @@ export class ProductController {
       }),
     }),
   )
+  @ApiConsumes('multipart/form-data')
   create(
     @Body() createProductDto: CreateProductDto,
     @UploadedFile() file: Express.Multer.File,

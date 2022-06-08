@@ -69,13 +69,11 @@ export class FlashsalesService {
         const itemFlashSale = flashSaleItem.map((flI) => {
           return this.itemFlashsalesService.create(flI, flashsale);
         });
-        await Promise.all(itemFlashSale)
-          .then(() => {
-            return { code: 200, message: 'Create flashsale success' };
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+
+        const createItemFlashSale = await Promise.all(itemFlashSale);
+        if (createItemFlashSale) {
+          return { code: 200, message: 'Create FlashSale successful' };
+        }
       }
     } catch (error) {
       throw new BadRequestException('Sever error');
@@ -83,11 +81,14 @@ export class FlashsalesService {
   }
 
   findAll() {
-    return `This action returns all flashsales`;
+    return this.flashsalerepository.find();
   }
 
   findOne(id: string) {
-    return `This action returns a #${id} flashsale`;
+    return this.flashsalerepository.findOne({
+      relations: ['itemFlashsale'],
+      where: { id },
+    });
   }
 
   update(id: string, updateFlashsaleDto: UpdateFlashsaleDto) {
