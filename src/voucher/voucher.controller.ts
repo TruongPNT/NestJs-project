@@ -15,14 +15,20 @@ import { UpdateVoucherDto } from './dto/update-voucher.dto';
 import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 import { FormDataRequest } from 'nestjs-form-data';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/authorization/roles.decorator';
+import { UserRole } from 'src/user/dto/user-roles.enum';
 
 @Controller('voucher')
+@ApiTags('Voucher')
+@ApiBearerAuth()
 @UseFilters(HttpExceptionFilter)
 @UseGuards(AuthGuard('jwt'))
 export class VoucherController {
   constructor(private readonly voucherService: VoucherService) {}
 
   @Post()
+  @Roles(UserRole.ADMIN)
   @FormDataRequest()
   create(@Body() createVoucherDto: CreateVoucherDto) {
     return this.voucherService.create(createVoucherDto);
@@ -40,11 +46,13 @@ export class VoucherController {
 
   @Patch(':id')
   @FormDataRequest()
+  @Roles(UserRole.ADMIN)
   update(@Param('id') id: string, @Body() updateVoucherDto: UpdateVoucherDto) {
     return this.voucherService.update(id, updateVoucherDto);
   }
 
   @Delete(':id')
+  @Roles(UserRole.ADMIN)
   remove(@Param('id') id: string) {
     return this.voucherService.remove(id);
   }

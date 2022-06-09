@@ -19,9 +19,9 @@ export class CategoryRepository extends Repository<Category> {
         name,
       });
       if (category) await this.save(category);
-      return { code: 200, message: 'Category created successfully' };
+      return { code: 200, message: 'Category created successfully', category };
     } catch (error) {
-      throw new BadRequestException('Sever error');
+      throw new BadRequestException(error);
     }
   }
   async updateCategory(

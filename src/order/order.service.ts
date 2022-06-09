@@ -1,10 +1,9 @@
+import { OrderDetailService } from './../order_detail/order_detail.service';
+import { UpdateOrderDto } from './dto/update-order.dto';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { OrderDetailService } from 'src/order_detail/order_detail.service';
 import { User } from 'src/user/entities/user.entity';
 import { VoucherService } from 'src/voucher/voucher.service';
-import { getConnection } from 'typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { Order } from './entities/order.entity';
 import { OrderRepository } from './order.repository';
 
 @Injectable()
@@ -119,11 +118,30 @@ export class OrderService {
     // return query;
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} order`;
+  async remove(id: string) {
+    try {
+      const order = await this.orderRepository.findOne(id);
+      if (!order) return { code: 404, message: 'Order not found' };
+      if (order.status === 'SHIPPING')
+        return {
+          code: 404,
+          message: 'Không được xoá đơn hàng trong trạng thái đang vận chuyển',
+        };
+      const order_detail =
+        await this.orderDetailService.orderDetailRepository.find({
+          where: { order },
+        });
+      await this.orderDetailService.orderDetailRepository.softRemove(
+        order_detail,
+      );
+      await this.orderRepository.softRemove(order);
+      return { code: 200, message: 'Order deleted successful' };
+    } catch (error) {
+      throw new BadRequestException('Sever error');
+    }
   }
 
-  update(id: string, status: string) {
-    return `This action removes a #${id} order`;
+  update(updateOrderDto: UpdateOrderDto, id: string) {
+    return this.orderRepository.updateOrder(updateOrderDto, id);
   }
 }

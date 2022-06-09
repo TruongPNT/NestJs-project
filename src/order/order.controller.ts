@@ -16,8 +16,13 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderStatus } from './entities/order.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { FormDataRequest } from 'nestjs-form-data';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/authorization/roles.decorator';
+import { UserRole } from 'src/user/dto/user-roles.enum';
 
 @Controller('order')
+@ApiTags('Order')
+@ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
@@ -36,7 +41,18 @@ export class OrderController {
   }
 
   @Get(':id')
+  @Roles(UserRole.ADMIN)
   findOne(@Param('id') id: string) {
     return this.orderService.findOne(id);
+  }
+
+  @Patch(':id')
+  update(@Body() updateOrderDto: UpdateOrderDto, @Param('id') id: string) {
+    return this.orderService.update(updateOrderDto, id);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.orderService.remove(id);
   }
 }

@@ -129,7 +129,7 @@ export class AuthService {
         await this.sendMailService.sendForgetPassword(email, otp);
         return 'Send forget password succsess';
       } else {
-        return 'User not found';
+        return { code: 401, message: 'User not found' };
       }
     } catch (error) {
       throw new BadRequestException('Sever error');

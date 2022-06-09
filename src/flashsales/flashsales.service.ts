@@ -27,32 +27,8 @@ export class FlashsalesService {
           code: 404,
           message: 'Thời gian kết thúc không được nhỏ hơn thời gian bắt đầu',
         };
-      const checkDate = await getConnection()
-        .createQueryBuilder('flashsale', 'fl')
-        .where(
-          '(fl.startSale <= :startSale AND (fl.endSale BETWEEN :startSale AND :endSale))',
-          {
-            startSale,
-            endSale,
-          },
-        )
-        .orWhere(
-          '((fl.startSale BETWEEN :startSale AND :endSale) AND fl.endSale >= :endSale)',
-          {
-            startSale,
-            endSale,
-          },
-        )
-        .orWhere('(fl.startSale <= :startSale AND  fl.endSale >= :endSale)', {
-          startSale,
-          endSale,
-        })
-        .orWhere('(fl.startSale >= :startSale AND  fl.endSale <= :endSale)', {
-          startSale,
-          endSale,
-        })
-        .getMany();
-      if (checkDate.length > 0) {
+      const checkDate = await this.checkDate(startSale, endSale);
+      if (!checkDate) {
         return {
           code: 404,
           message: 'Không thể đặt flashsale vì trùng thời gian',
@@ -72,7 +48,11 @@ export class FlashsalesService {
 
         const createItemFlashSale = await Promise.all(itemFlashSale);
         if (createItemFlashSale) {
-          return { code: 200, message: 'Create FlashSale successful' };
+          return {
+            code: 200,
+            message: 'Create FlashSale successful',
+            flashsale,
+          };
         }
       }
     } catch (error) {
@@ -91,11 +71,132 @@ export class FlashsalesService {
     });
   }
 
-  update(id: string, updateFlashsaleDto: UpdateFlashsaleDto) {
-    return `This action updates a #${id} flashsale`;
+  async update(id: string, updateFlashsaleDto: UpdateFlashsaleDto) {
+    const flashsale = await this.flashsalerepository.findOne(id);
+    if (!flashsale) return { code: 404, message: 'Flash sale not found' };
+    const { startSale, endSale } = updateFlashsaleDto;
+    const start = new Date(startSale);
+    const end = new Date(endSale);
+    const flashsaleStartTime = new Date(flashsale.startSale);
+    const flashsaleEndTime = new Date(flashsale.endSale);
+    if (flashsaleStartTime.getTime() < dateNow.getTime())
+      return {
+        code: 404,
+        message: 'Không thể update flash sale khi đã bắt đầu ',
+      };
+    if (startSale && !endSale) {
+      if (start.getTime() < dateNow.getTime())
+        return {
+          code: 404,
+          message: 'Thời gian bắt đầu không được nhỏ hơn hiện tại',
+        };
+      const checkDate = await this.checkDate(start, flashsaleEndTime);
+      if (checkDate) {
+        await this.flashsalerepository.save({
+          ...flashsale,
+          ...updateFlashsaleDto,
+        });
+        return {
+          code: 200,
+          message: 'Update flashsale success',
+        };
+      }
+    }
+
+    if (endSale && !startSale) {
+      if (end.getTime() < dateNow.getTime())
+        return {
+          code: 404,
+          message: 'Thời gian kết thúc không được nhỏ hơn hiện tại',
+        };
+      const checkDate = await this.checkDate(flashsaleStartTime, end);
+      if (checkDate) {
+        await this.flashsalerepository.save({
+          ...flashsale,
+          ...updateFlashsaleDto,
+        });
+        return {
+          code: 200,
+          message: 'Update flashsale success',
+        };
+      }
+    }
+
+    if (startSale && endSale) {
+      if (end.getTime() < start.getTime())
+        return {
+          code: 404,
+          message: 'Thời gian kết thúc không được nhỏ hơn thời gian bắt đầu',
+        };
+      const checkDate = await this.checkDate(startSale, endSale);
+      if (checkDate) {
+        await this.flashsalerepository.save({
+          ...flashsale,
+          ...updateFlashsaleDto,
+        });
+        return {
+          code: 200,
+          message: 'Update flashsale success',
+        };
+      } else {
+        return {
+          code: 404,
+          message: 'Không thể đặt flashsale vì trùng thời gian',
+        };
+      }
+    }
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} flashsale`;
+  async remove(id: string) {
+    try {
+      const flashsale = await this.flashsalerepository.findOne(id);
+      if (!flashsale) return { code: 404, message: 'flashsale not found' };
+      const flashSaleItems =
+        await this.itemFlashsalesService.itemFlashsaleRepository.find({
+          where: { flashsale },
+        });
+      await this.itemFlashsalesService.itemFlashsaleRepository.softRemove(
+        flashSaleItems,
+      );
+      await this.flashsalerepository.softRemove(flashsale);
+      return { code: 200, message: 'delete flashsale successful' };
+    } catch (error) {
+      throw new BadRequestException('Sever error');
+    }
+  }
+
+  async checkDate(startSale: Date, endSale: Date) {
+    const start = new Date(startSale);
+    const end = new Date(endSale);
+    const checkDate = await getConnection()
+      .createQueryBuilder('flashsale', 'fl')
+      .where(
+        '(fl.startSale <= :startSale AND (fl.endSale BETWEEN :startSale AND :endSale))',
+        {
+          startSale,
+          endSale,
+        },
+      )
+      .orWhere(
+        '((fl.startSale BETWEEN :startSale AND :endSale) AND fl.endSale >= :endSale)',
+        {
+          startSale,
+          endSale,
+        },
+      )
+      .orWhere('(fl.startSale <= :startSale AND  fl.endSale >= :endSale)', {
+        startSale,
+        endSale,
+      })
+      .orWhere('(fl.startSale >= :startSale AND  fl.endSale <= :endSale)', {
+        startSale,
+        endSale,
+      })
+      .getMany();
+    if (checkDate.length > 0) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }

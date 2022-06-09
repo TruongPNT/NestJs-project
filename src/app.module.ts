@@ -16,6 +16,7 @@ import { ItemFlashsalesModule } from './item-flashsales/item-flashsales.module';
 import { FlashsalesModule } from './flashsales/flashsales.module';
 import { OrderModule } from './order/order.module';
 import { OrderDetailModule } from './order_detail/order_detail.module';
+import { CronjobModule } from './cronjob/cronjob.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { OrderDetailModule } from './order_detail/order_detail.module';
     FlashsalesModule,
     OrderModule,
     OrderDetailModule,
+    CronjobModule,
   ],
   controllers: [AppController],
   providers: [AppService],

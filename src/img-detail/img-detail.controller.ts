@@ -19,14 +19,21 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/authorization/roles.decorator';
+import { UserRole } from 'src/user/dto/user-roles.enum';
 
 @Controller('img-detail')
+@ApiTags('Img-detail')
+@ApiBearerAuth()
 @UseFilters(HttpExceptionFilter)
 @UseGuards(AuthGuard('jwt'))
 export class ImgDetailController {
   constructor(private readonly imgDetailService: ImgDetailService) {}
 
   @Post()
+  @Roles(UserRole.ADMIN)
+  @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileInterceptor('img_detail', {
       storage: diskStorage({
@@ -61,6 +68,8 @@ export class ImgDetailController {
   }
 
   @Patch(':id')
+  @Roles(UserRole.ADMIN)
+  @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileInterceptor('img_detail', {
       storage: diskStorage({
@@ -86,6 +95,7 @@ export class ImgDetailController {
   }
 
   @Delete(':id')
+  @Roles(UserRole.ADMIN)
   remove(@Param('id') id: string) {
     return this.imgDetailService.remove(id);
   }

@@ -58,19 +58,18 @@ export class ProductController {
   }
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
   findAll() {
     return this.productService.findAll();
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard('jwt'))
   findOne(@Param('id') id: string) {
     return this.productService.findOne(id);
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard('jwt'))
+  @Roles(UserRole.ADMIN)
+  @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileInterceptor('product_img', {
       storage: diskStorage({
@@ -96,7 +95,7 @@ export class ProductController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard('jwt'))
+  @Roles(UserRole.ADMIN)
   remove(@Param('id') id: string) {
     return this.productService.remove(id);
   }

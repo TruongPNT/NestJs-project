@@ -13,21 +13,28 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { FormDataRequest } from 'nestjs-form-data';
 import { extname } from 'path';
+import { Roles } from 'src/authorization/roles.decorator';
 import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
+import { UserRole } from 'src/user/dto/user-roles.enum';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Controller('category')
 @UseFilters(HttpExceptionFilter)
+@ApiTags('Category')
+@ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
+  @Roles(UserRole.ADMIN)
+  @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileInterceptor('banner', {
       storage: diskStorage({
@@ -62,6 +69,8 @@ export class CategoryController {
   }
 
   @Patch(':id')
+  @Roles(UserRole.ADMIN)
+  @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileInterceptor('banner', {
       storage: diskStorage({
@@ -87,6 +96,7 @@ export class CategoryController {
   }
 
   @Delete(':id')
+  @Roles(UserRole.ADMIN)
   remove(@Param('id') id: string) {
     return this.categoryService.remove(id);
   }

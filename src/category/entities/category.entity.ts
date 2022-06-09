@@ -21,7 +21,7 @@ export class Category extends BaseEntity {
   @Column()
   banner?: string;
 
-  @Column()
+  @Column({ unique: true })
   index?: number;
 
   @Column({ default: true })

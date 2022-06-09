@@ -1,19 +1,15 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseFilters,
-} from '@nestjs/common';
+import { Controller, Get, Param, UseFilters, UseGuards } from '@nestjs/common';
 import { OrderDetailService } from './order_detail.service';
-import { CreateOrderDetailDto } from './dto/create-order_detail.dto';
-import { UpdateOrderDetailDto } from './dto/update-order_detail.dto';
 import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
+import { Roles } from 'src/authorization/roles.decorator';
+import { UserRole } from 'src/user/dto/user-roles.enum';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('order-detail')
+@ApiTags('Order-detail')
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'))
 @UseFilters(HttpExceptionFilter)
 export class OrderDetailController {
   constructor(private readonly orderDetailService: OrderDetailService) {}
@@ -24,6 +20,7 @@ export class OrderDetailController {
   // }
 
   @Get()
+  @Roles(UserRole.ADMIN)
   findAll() {
     return this.orderDetailService.findAll();
   }

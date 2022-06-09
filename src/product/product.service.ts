@@ -4,9 +4,7 @@ import { ProductsRepository } from './product.repository';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CategoryService } from 'src/category/category.service';
 import * as randomsString from 'randomstring';
-import { async } from 'rxjs';
 import { getConnection } from 'typeorm';
-import { ItemFlashsale } from 'src/item-flashsales/entities/item-flashsale.entity';
 import { Product } from './entities/product.entity';
 
 @Injectable()
@@ -62,7 +60,7 @@ export class ProductService {
   }
 
   findAll() {
-    return this.productRepository.find({ where: { status: true } });
+    return this.productRepository.find();
   }
 
   async findOne(id: string) {

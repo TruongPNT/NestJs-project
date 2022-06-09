@@ -1,13 +1,5 @@
-import {
-  Controller,
-  Post,
-  Body,
-  UseFilters,
-  UseGuards,
-  Req,
-  Get,
-  Query,
-} from '@nestjs/common';
+import { Controller, Post, Body, UseFilters, Get, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { FormDataRequest } from 'nestjs-form-data';
 import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 import { AuthService } from './auth.service';
@@ -15,6 +7,7 @@ import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { ForgetPasswordDto } from './dto/forget-password.dto';
 
 @Controller('auth')
+@ApiTags('Authen')
 @UseFilters(HttpExceptionFilter)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -37,7 +30,7 @@ export class AuthController {
   }
 
   @Get('/request-forget-password')
-  requestForgetPassword(@Body('email') email: string) {
+  requestForgetPassword(@Query('email') email: string) {
     return this.authService.requestForgetPassword(email);
   }
 
@@ -49,8 +42,7 @@ export class AuthController {
 
   @Post('/refresh-token')
   @FormDataRequest()
-  refreshToken(@Body() req) {
-    const { refreshToken } = req;
+  refreshToken(@Query('refreshToken') refreshToken: string) {
     return this.authService.refreshToken(refreshToken);
   }
 }

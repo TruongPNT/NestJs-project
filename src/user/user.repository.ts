@@ -102,4 +102,12 @@ export class UsersRepository extends Repository<User> {
       throw new BadRequestException('Sever error');
     }
   }
+  async updateForUser(updateUserDto: UpdateUserDto, user: User) {
+    try {
+      const result = await this.save({ ...user, ...updateUserDto });
+      if (result) return { code: 200, message: 'Update successful' };
+    } catch (error) {
+      throw new BadRequestException('Sever error');
+    }
+  }
 }
