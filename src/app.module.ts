@@ -7,8 +7,6 @@ import { ProductModule } from './product/product.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { SendmailModule } from './sendmail/sendmail.module';
-import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from './authorization/roles.guard';
 import { ImgDetailModule } from './img-detail/img-detail.module';
 import { VoucherModule } from './voucher/voucher.module';
 import { CategoryModule } from './category/category.module';
@@ -17,9 +15,12 @@ import { FlashsalesModule } from './flashsales/flashsales.module';
 import { OrderModule } from './order/order.module';
 import { OrderDetailModule } from './order_detail/order_detail.module';
 import { CronjobModule } from './cronjob/cronjob.module';
+import { CronjobService } from './cronjob/cronjob.service';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ProductModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -47,6 +48,6 @@ import { CronjobModule } from './cronjob/cronjob.module';
     CronjobModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, CronjobService],
 })
 export class AppModule {}

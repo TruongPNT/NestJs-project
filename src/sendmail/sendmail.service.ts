@@ -1,10 +1,15 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { Flashsale } from 'src/flashsales/entities/flashsale.entity';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class SendmailService {
-  constructor(private readonly mailerService: MailerService) {}
+  constructor(
+    public mailerService: MailerService,
+    private userService: UserService,
+  ) {}
   async sendVerifiedEmail(email: string, OTP: string) {
     this.mailerService
       .sendMail({
@@ -35,5 +40,22 @@ export class SendmailService {
       .catch((err) => {
         console.log(err);
       });
+  }
+
+  async sendNotification(flashsale: Flashsale) {
+    try {
+      const users = await this.userService.usersRepository.find();
+      const sendNotification = await users.map((user) => {
+        this.mailerService.sendMail({
+          to: `${user.email}`, // list of receivers
+          from: 'truongpros17@gmail.com', // sender address
+          subject: 'Flashsale notification', // Subject line
+          text: `Welcome to flashsale: ${flashsale.name}.\n This flashsale start from: ${flashsale.startSale} to ${flashsale.endSale} `,
+        });
+      });
+      await Promise.all(sendNotification);
+    } catch (error) {
+      throw new BadRequestException();
+    }
   }
 }

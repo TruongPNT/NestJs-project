@@ -98,9 +98,29 @@ export class ProductService {
       .leftJoin('product.itemFlashsale', 'item_flashsale')
       .leftJoin('item_flashsale.flashsale', 'flashsale')
       .where('product.id = :id', { id })
-      .andWhere('flashsale.startSale < :timeNow', { timeNow })
-      .andWhere('flashsale.endSale > :timeNow', { timeNow })
+      .andWhere('flashsale.startSale <= :timeNow', { timeNow })
+      .andWhere('flashsale.endSale >= :timeNow', { timeNow })
       .execute();
     return query[0];
+  }
+
+  async updateIsSaleTrue(id: string) {
+    const product = await this.productRepository.findOne(id);
+    if (!product.is_sale) {
+      await this.productRepository.save({
+        ...product,
+        is_sale: true,
+      });
+    }
+  }
+
+  async updateIsSaleFalse(id: string) {
+    const product = await this.productRepository.findOne(id);
+    if (product.is_sale) {
+      await this.productRepository.save({
+        ...product,
+        is_sale: false,
+      });
+    }
   }
 }
