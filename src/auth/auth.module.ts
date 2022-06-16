@@ -5,9 +5,9 @@ import { NestjsFormDataModule } from 'nestjs-form-data';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.stategy';
-import { UserModule } from 'src/user/user.module';
+import { UserModule } from '../user/user.module';
 import { ConfigModule } from '@nestjs/config';
-import { SendmailModule } from 'src/sendmail/sendmail.module';
+import { SendmailModule } from '../sendmail/sendmail.module';
 
 @Module({
   imports: [

@@ -1,8 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { Flashsale } from 'src/flashsales/entities/flashsale.entity';
-import { FlashsalesService } from 'src/flashsales/flashsales.service';
-import { ProductsRepository } from 'src/product/product.repository';
-import { ProductService } from 'src/product/product.service';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Flashsale } from '../flashsales/entities/flashsale.entity';
+
+import { ProductService } from '../product/product.service';
 import { CreateItemFlashsaleDto } from './dto/create-item-flashsale.dto';
 import { UpdateItemFlashsaleDto } from './dto/update-item-flashsale.dto';
 import { ItemFlashSalesRepository } from './item-flashsales.repository';
@@ -48,18 +52,16 @@ export class ItemFlashsalesService {
       const { quantity, discount } = updateItemFlashsaleDto;
       const itemFlashSale = await this.findOne(id);
       if (!itemFlashSale)
-        return { code: 404, message: 'ItemFlashSale not found' };
+        throw new NotFoundException('ItemflashSale not found');
       const product = await this.productService.findOne(
         itemFlashSale.product.id,
       );
-      if (!product) return { code: 404, message: 'Product not found' };
+      if (!product) throw new NotFoundException('Product not found');
       if (quantity) {
         if (quantity > product.quantity + itemFlashSale.quantity) {
-          return {
-            code: 404,
-            message:
-              'Số lượng flash sale không được lớn hơn số lượng còn lại trong kho',
-          };
+          throw new ConflictException(
+            'Số lượng flash sale không được lớn hơn số lượng còn lại trong kho',
+          );
         }
         product.quantity = product.quantity + itemFlashSale.quantity - quantity;
         await this.productService.productRepository.save(product);

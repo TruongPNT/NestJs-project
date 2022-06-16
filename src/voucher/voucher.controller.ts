@@ -12,12 +12,12 @@ import {
 import { VoucherService } from './voucher.service';
 import { CreateVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
-import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
+import { HttpExceptionFilter } from '../filter/http-exception.filter';
 import { FormDataRequest } from 'nestjs-form-data';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { Roles } from 'src/authorization/roles.decorator';
-import { UserRole } from 'src/user/dto/user-roles.enum';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Roles } from '../authorization/roles.decorator';
+import { UserRole } from '../user/dto/user-roles.enum';
 
 @Controller('voucher')
 @ApiTags('Voucher')

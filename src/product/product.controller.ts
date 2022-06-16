@@ -18,10 +18,11 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { HttpExceptionFilter } from '../filter/http-exception.filter';
-import { AuthGuard } from '@nestjs/passport';
-import { Roles } from 'src/authorization/roles.decorator';
-import { UserRole } from 'src/user/dto/user-roles.enum';
+
+import { Roles } from '../authorization/roles.decorator';
+import { UserRole } from '../user/dto/user-roles.enum';
 import { ApiTags, ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('products')
 @ApiTags('Product')
@@ -52,7 +53,7 @@ export class ProductController {
   @ApiConsumes('multipart/form-data')
   create(
     @Body() createProductDto: CreateProductDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
     return this.productService.createProduct(createProductDto, file);
   }
@@ -89,7 +90,7 @@ export class ProductController {
   update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
     return this.productService.update(id, updateProductDto, file);
   }

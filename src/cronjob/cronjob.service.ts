@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { FlashsalesService } from 'src/flashsales/flashsales.service';
-import { ItemFlashsalesService } from 'src/item-flashsales/item-flashsales.service';
-import { ProductService } from 'src/product/product.service';
-import { SendmailService } from 'src/sendmail/sendmail.service';
+import { FlashsalesService } from '../flashsales/flashsales.service';
+import { ItemFlashsalesService } from '../item-flashsales/item-flashsales.service';
+import { ProductService } from '../product/product.service';
+import { SendmailService } from '../sendmail/sendmail.service';
 
 @Injectable()
 export class CronjobService {

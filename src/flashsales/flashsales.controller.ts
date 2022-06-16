@@ -14,10 +14,10 @@ import { CreateFlashsaleDto } from './dto/create-flashsale.dto';
 import { UpdateFlashsaleDto } from './dto/update-flashsale.dto';
 import { FormDataRequest } from 'nestjs-form-data';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
+import { HttpExceptionFilter } from '../filter/http-exception.filter';
 import { AuthGuard } from '@nestjs/passport';
-import { Roles } from 'src/authorization/roles.decorator';
-import { UserRole } from 'src/user/dto/user-roles.enum';
+import { Roles } from '../authorization/roles.decorator';
+import { UserRole } from '../user/dto/user-roles.enum';
 
 @Controller('flashsales')
 @ApiTags('Flashsales')

@@ -1,6 +1,6 @@
-import { OrderDetail } from 'src/order_detail/entities/order_detail.entity';
-import { User } from 'src/user/entities/user.entity';
-import { Voucher } from 'src/voucher/entities/voucher.entity';
+import { OrderDetail } from '../../order_detail/entities/order_detail.entity';
+import { User } from '../../user/entities/user.entity';
+import { Voucher } from '../../voucher/entities/voucher.entity';
 import {
   BaseEntity,
   Column,

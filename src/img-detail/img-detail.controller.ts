@@ -17,11 +17,11 @@ import { UpdateImgDetailDto } from './dto/update-img-detail.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
+import { HttpExceptionFilter } from '../filter/http-exception.filter';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { Roles } from 'src/authorization/roles.decorator';
-import { UserRole } from 'src/user/dto/user-roles.enum';
+import { Roles } from '../authorization/roles.decorator';
+import { UserRole } from '../user/dto/user-roles.enum';
 
 @Controller('img-detail')
 @ApiTags('Img-detail')

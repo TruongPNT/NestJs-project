@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ProductService } from 'src/product/product.service';
+import { ProductService } from '../product/product.service';
 import { CreateImgDetailDto } from './dto/create-img-detail.dto';
 import { UpdateImgDetailDto } from './dto/update-img-detail.dto';
 import { ImgDetailsRepository } from './img-detail.repository';

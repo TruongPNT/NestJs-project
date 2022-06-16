@@ -1,7 +1,7 @@
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { Category } from './entities/category.entity';
 import { EntityRepository, Repository } from 'typeorm';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import * as fs from 'fs';
 @EntityRepository(Category)
@@ -31,7 +31,7 @@ export class CategoryRepository extends Repository<Category> {
   ) {
     try {
       const category = await this.findOne(id);
-      if (!category) return { code: 404, message: 'Category not found' };
+      if (!category) throw new NotFoundException('Category not found');
       if (file) {
         if (fs.existsSync(category.banner)) {
           fs.unlinkSync(`./${category.banner}`);
@@ -50,7 +50,7 @@ export class CategoryRepository extends Repository<Category> {
   async destroyCategory(id: string) {
     try {
       const category = await this.findOne(id);
-      if (!category) return { code: 404, message: 'Category not found' };
+      if (!category) throw new NotFoundException('Category not found');
       const result = await this.softRemove(category);
       if (result) return { code: 200, message: 'Delete category successful' };
     } catch (error) {

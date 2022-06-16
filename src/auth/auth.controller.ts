@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UseFilters, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { FormDataRequest } from 'nestjs-form-data';
-import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
+import { HttpExceptionFilter } from '../filter/http-exception.filter';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { ForgetPasswordDto } from './dto/forget-password.dto';

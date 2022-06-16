@@ -1,8 +1,7 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
-import { Flashsale } from 'src/flashsales/entities/flashsale.entity';
-import { UserService } from 'src/user/user.service';
+import { Flashsale } from '../flashsales/entities/flashsale.entity';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class SendmailService {

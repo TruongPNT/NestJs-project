@@ -13,11 +13,11 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
+import { HttpExceptionFilter } from '../filter/http-exception.filter';
 import { FormDataRequest } from 'nestjs-form-data';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Roles } from 'src/authorization/roles.decorator';
+import { Roles } from '../authorization/roles.decorator';
 import { UserRole } from './dto/user-roles.enum';
 
 @Controller('users')

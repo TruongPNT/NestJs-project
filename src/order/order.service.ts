@@ -1,8 +1,13 @@
 import { OrderDetailService } from './../order_detail/order_detail.service';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { User } from 'src/user/entities/user.entity';
-import { VoucherService } from 'src/voucher/voucher.service';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { User } from '../user/entities/user.entity';
+import { VoucherService } from '../voucher/voucher.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderRepository } from './order.repository';
 
@@ -61,19 +66,18 @@ export class OrderService {
           const voucher = await this.voucherService.voucherRepository.findOne(
             voucher_id,
           );
-          if (!voucher) return { code: 404, message: 'Voucher not found' };
+          if (!voucher) throw new NotFoundException('Voucher not found');
           const startTime = new Date(voucher.startTime).getTime();
           const endTime = new Date(voucher.endTime).getTime();
           if (voucher.quantity == 0)
-            return { code: 404, message: 'voucher đã hết số lượng sử dụng' };
+            throw new ConflictException('Voucher đã hết số lượng sử dụng');
           if (dateNow < startTime || endTime < dateNow) {
-            return {
-              code: 404,
-              message: 'thời hạn voucher đã kết thúc hoặc chưa diễn ra',
-            };
+            throw new ConflictException(
+              'Thời hạn voucher đã kết thúc hoặc chưa diễn ra ',
+            );
           }
           if (voucher.status === false) {
-            return { code: 404, message: 'Voucher không thể sử dụng lúc này' };
+            throw new ConflictException('Voucher không thể sử dụng hiện tại');
           }
           voucher.quantity = voucher.quantity - 1;
           await this.voucherService.voucherRepository.save(voucher);
@@ -121,12 +125,11 @@ export class OrderService {
   async remove(id: string) {
     try {
       const order = await this.orderRepository.findOne(id);
-      if (!order) return { code: 404, message: 'Order not found' };
+      if (!order) throw new NotFoundException('Order not found');
       if (order.status === 'SHIPPING')
-        return {
-          code: 404,
-          message: 'Không được xoá đơn hàng trong trạng thái đang vận chuyển',
-        };
+        throw new ConflictException(
+          'Không được xoá đơn hàng trong thời gian vận chuyển',
+        );
       const order_detail =
         await this.orderDetailService.orderDetailRepository.find({
           where: { order },

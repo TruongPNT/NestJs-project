@@ -9,26 +9,26 @@ export class CreateProductDto {
   @IsNumber()
   @Type(() => Number)
   @ApiProperty({ type: 'number' })
-  import_price: number;
+  import_price?: number;
 
   @IsNumber()
   @Type(() => Number)
   @ApiProperty({ type: 'number' })
-  sell_price: number;
+  sell_price?: number;
 
   @IsNumber()
   @Type(() => Number)
   @ApiProperty({ type: 'number' })
-  quantity: number;
+  quantity?: number;
 
   @ApiProperty({ type: 'string', format: 'binary' })
-  product_img: Express.Multer.File;
+  product_img?: Express.Multer.File;
 
   @IsString()
   @ApiProperty({ type: 'string', required: false })
-  description: string;
+  description?: string;
 
   @IsString()
   @ApiProperty({ type: 'string' })
-  categoryId: string;
+  categoryId?: string;
 }

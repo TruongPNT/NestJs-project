@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserRole } from './dto/user-roles.enum';
@@ -13,10 +13,13 @@ export class UsersRepository extends Repository<User> {
       // hash password
       const result = await this.findOne({ email: email });
       if (result) {
-        return {
-          code: 404,
-          message: 'Email đã tồn tại',
-        };
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Email already exists',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
       }
       const salt = await bcrypt.genSalt();
       const hashedPassword = await bcrypt.hash(password, salt);
@@ -37,7 +40,7 @@ export class UsersRepository extends Repository<User> {
       };
     } catch (error) {
       console.log(error);
-      throw new BadRequestException();
+      throw new BadRequestException('Sever error');
     }
   }
   async updateUser(id: string, updateUserDto: UpdateUserDto) {

@@ -4,7 +4,7 @@ import { ImgDetailController } from './img-detail.controller';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ImgDetailsRepository } from './img-detail.repository';
-import { ProductModule } from 'src/product/product.module';
+import { ProductModule } from '../product/product.module';
 
 @Module({
   imports: [

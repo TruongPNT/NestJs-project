@@ -1,4 +1,3 @@
-import { User } from 'src/user/entities/user.entity';
 import {
   Controller,
   Get,
@@ -13,12 +12,12 @@ import {
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { OrderStatus } from './entities/order.entity';
+
 import { AuthGuard } from '@nestjs/passport';
 import { FormDataRequest } from 'nestjs-form-data';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Roles } from 'src/authorization/roles.decorator';
-import { UserRole } from 'src/user/dto/user-roles.enum';
+import { Roles } from '../authorization/roles.decorator';
+import { UserRole } from '../user/dto/user-roles.enum';
 
 @Controller('order')
 @ApiTags('Order')

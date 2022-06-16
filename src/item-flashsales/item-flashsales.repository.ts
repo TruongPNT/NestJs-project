@@ -1,6 +1,6 @@
-import { BadRequestException } from '@nestjs/common';
-import { Flashsale } from 'src/flashsales/entities/flashsale.entity';
-import { Product } from 'src/product/entities/product.entity';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { Flashsale } from '../flashsales/entities/flashsale.entity';
+import { Product } from '../product/entities/product.entity';
 import { EntityRepository, Repository } from 'typeorm';
 import { CreateItemFlashsaleDto } from './dto/create-item-flashsale.dto';
 import { UpdateItemFlashsaleDto } from './dto/update-item-flashsale.dto';
@@ -45,7 +45,7 @@ export class ItemFlashSalesRepository extends Repository<ItemFlashsale> {
     try {
       const itemFlashSale = await this.findOne(id);
       if (!itemFlashSale)
-        return { code: 404, message: 'itemFlashSale not found' };
+        throw new NotFoundException('Item Flash Sale not found');
       const result = await this.softRemove(itemFlashSale);
       if (result)
         return { code: 200, message: 'delete itemFlashSale successful' };

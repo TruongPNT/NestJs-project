@@ -1,13 +1,15 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { JwtPayload } from './jwt-payload.interface';
-import { UserService } from 'src/user/user.service';
-import { SendmailService } from 'src/sendmail/sendmail.service';
+import { UserService } from '../user/user.service';
+import { SendmailService } from '../sendmail/sendmail.service';
 import * as bcrypt from 'bcrypt';
 import { ForgetPasswordDto } from './dto/forget-password.dto';
 @Injectable()
@@ -21,19 +23,17 @@ export class AuthService {
   async signUp(authCredentialsDto: AuthCredentialsDto) {
     try {
       const result = await this.userService.create(authCredentialsDto);
-      if (result.code === 200) {
+      if (result) {
         const userId = result.data.id;
         // tạo otp
         const otp = await this.generateOTP(userId);
         // send mail
         await this.sendMailService.sendVerifiedEmail(result.data.email, otp);
         return {
-          code: result.code,
+          code: 200,
           message: 'Đăng ký thành công, xin mời vào hòm thư để xác minh',
         };
       }
-      if (result.code === 404)
-        return { code: result.code, message: 'Email đã tồn tại' };
     } catch (error) {
       console.error(error);
       throw new BadRequestException('Sever error');
@@ -47,10 +47,9 @@ export class AuthService {
       if (user && (await bcrypt.compare(password, user.password))) {
         // nếu tài khoản chưa xác thực thì không cho đăng nhập
         if (user.isActive == false) {
-          return {
-            code: 401,
-            message: 'Bạn cần xác thực tài khoản trước',
-          };
+          throw new UnauthorizedException(
+            'Bạn cần phải xác minh tài khoản trước',
+          );
         }
         const payload: JwtPayload = { email };
         const accessToken = await this.jwtService.sign(payload, {
@@ -62,7 +61,7 @@ export class AuthService {
         });
         return { message: 'Login successful', accessToken, refreshToken, user };
       } else {
-        return { code: 401, message: 'Wrong username or password!' };
+        throw new UnauthorizedException('Sai tài khoản hoặc mật khẩu');
       }
     } catch (error) {
       throw new BadRequestException('Sever error');
@@ -88,25 +87,26 @@ export class AuthService {
       }
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
-        return {
-          code: 401,
-          message: 'RefreshToken đã hết hạn, mời bạn đăng nhập lại',
-        };
+        throw new ForbiddenException('Mời bạn đăng nhập lại');
       }
       throw new BadRequestException('Sever error');
     }
   }
 
   async verifyEmail(email: string, OTP: string) {
-    const user = await this.userService.findOneByEmail(email);
-    if (user) {
-      const result = await this.verifyOTP(user.id, OTP);
-      if (result) {
-        await this.userService.verifyEmail(email);
-        return 'Verify email successful';
+    try {
+      const user = await this.userService.findOneByEmail(email);
+      if (user) {
+        const result = await this.verifyOTP(user.id, OTP);
+        if (result) {
+          await this.userService.verifyEmail(email);
+          return 'Verify email successful';
+        }
+      } else {
+        throw new NotFoundException('Email not found');
       }
-    } else {
-      return 'user not found';
+    } catch (error) {
+      throw new BadRequestException('Sever error');
     }
   }
 
@@ -129,7 +129,7 @@ export class AuthService {
         await this.sendMailService.sendForgetPassword(email, otp);
         return 'Send forget password succsess';
       } else {
-        return { code: 401, message: 'User not found' };
+        throw new NotFoundException('Không tìm thấy người dùng');
       }
     } catch (error) {
       throw new BadRequestException('Sever error');
@@ -140,7 +140,7 @@ export class AuthService {
     try {
       const { email, newPassword, otp } = forgetPasswordDto;
       const user = await this.userService.findOneByEmail(email);
-      if (!user) return 'User not found';
+      if (!user) throw new NotFoundException('Không tìm thấy người dùng');
       const result = await this.verifyOTP(user.id, otp);
       if (result) {
         const updateP = await this.userService.updatePassword(

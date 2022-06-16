@@ -1,4 +1,3 @@
-import { Voucher } from 'src/voucher/entities/voucher.entity';
 import { VoucherRepository } from './voucher.repository';
 import { Injectable } from '@nestjs/common';
 import { CreateVoucherDto } from './dto/create-voucher.dto';

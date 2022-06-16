@@ -1,5 +1,5 @@
-import { Order } from 'src/order/entities/order.entity';
-import { UserRole } from 'src/user/dto/user-roles.enum';
+import { Order } from '../../order/entities/order.entity';
+import { UserRole } from '../../user/dto/user-roles.enum';
 import {
   BaseEntity,
   Column,

@@ -3,7 +3,7 @@ import { FlashsalesService } from './flashsales.service';
 import { FlashsalesController } from './flashsales.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NestjsFormDataModule } from 'nestjs-form-data';
-import { ItemFlashsalesModule } from 'src/item-flashsales/item-flashsales.module';
+import { ItemFlashsalesModule } from '../item-flashsales/item-flashsales.module';
 import { FlashSalesRepository } from './flashsales.repository';
 
 @Module({

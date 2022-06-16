@@ -4,8 +4,8 @@ import { OrderDetailController } from './order_detail.controller';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrderDetailRepository } from './order_detail.repository';
-import { ProductModule } from 'src/product/product.module';
-import { ItemFlashsalesModule } from 'src/item-flashsales/item-flashsales.module';
+import { ProductModule } from '../product/product.module';
+import { ItemFlashsalesModule } from '../item-flashsales/item-flashsales.module';
 
 @Module({
   imports: [

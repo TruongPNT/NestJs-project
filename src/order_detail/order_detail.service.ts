@@ -7,9 +7,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateOrderDetailDto } from './dto/create-order_detail.dto';
-import { ProductService } from 'src/product/product.service';
-import { ItemFlashsalesService } from 'src/item-flashsales/item-flashsales.service';
-import { Order } from 'src/order/entities/order.entity';
+import { ProductService } from '../product/product.service';
+import { ItemFlashsalesService } from '../item-flashsales/item-flashsales.service';
+import { Order } from '../order/entities/order.entity';
 
 @Injectable()
 export class OrderDetailService {

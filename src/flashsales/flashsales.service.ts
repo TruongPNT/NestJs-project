@@ -1,6 +1,11 @@
 import { FlashSalesRepository } from './flashsales.repository';
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { ItemFlashsalesService } from 'src/item-flashsales/item-flashsales.service';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { ItemFlashsalesService } from '../item-flashsales/item-flashsales.service';
 import { CreateFlashsaleDto } from './dto/create-flashsale.dto';
 import { UpdateFlashsaleDto } from './dto/update-flashsale.dto';
 import { getConnection } from 'typeorm';
@@ -18,21 +23,18 @@ export class FlashsalesService {
       const start = new Date(startSale);
       const end = new Date(endSale);
       if (start.getTime() < dateNow.getTime())
-        return {
-          code: 404,
-          message: 'Thời gian bắt đầu không được nhỏ hơn hiện tại',
-        };
+        throw new ConflictException(
+          'Thời gian bắt đầu không được nhỏ hơn hiện tại',
+        );
       if (end.getTime() < start.getTime())
-        return {
-          code: 404,
-          message: 'Thời gian kết thúc không được nhỏ hơn thời gian bắt đầu',
-        };
+        throw new ConflictException(
+          'Thời gian kết thúc không được nhỏ hơn thời gian bắt đầu',
+        );
       const checkDate = await this.checkDate(startSale, endSale);
       if (!checkDate) {
-        return {
-          code: 404,
-          message: 'Không thể đặt flashsale vì trùng thời gian',
-        };
+        throw new ConflictException(
+          'Không thể đặt flashsale vì trùng thời gian',
+        );
       }
       const flashsale = await this.flashsalerepository.create({
         description,
@@ -73,7 +75,7 @@ export class FlashsalesService {
 
   async update(id: string, updateFlashsaleDto: UpdateFlashsaleDto) {
     const flashsale = await this.flashsalerepository.findOne(id);
-    if (!flashsale) return { code: 404, message: 'Flash sale not found' };
+    if (!flashsale) throw new NotFoundException('FlashSale not found');
     const { startSale, endSale } = updateFlashsaleDto;
     const start = new Date(startSale);
     const end = new Date(endSale);
@@ -86,10 +88,9 @@ export class FlashsalesService {
       };
     if (startSale && !endSale) {
       if (start.getTime() < dateNow.getTime())
-        return {
-          code: 404,
-          message: 'Thời gian bắt đầu không được nhỏ hơn hiện tại',
-        };
+        throw new ConflictException(
+          'Thời gian bắt đầu không được nhỏ hơn hiện tại',
+        );
       const checkDate = await this.checkDate(start, flashsaleEndTime);
       if (checkDate) {
         await this.flashsalerepository.save({
@@ -105,10 +106,9 @@ export class FlashsalesService {
 
     if (endSale && !startSale) {
       if (end.getTime() < dateNow.getTime())
-        return {
-          code: 404,
-          message: 'Thời gian kết thúc không được nhỏ hơn hiện tại',
-        };
+        throw new ConflictException(
+          'Thời gian kết thúc không được nhỏ hơn thời gian hiện tại',
+        );
       const checkDate = await this.checkDate(flashsaleStartTime, end);
       if (checkDate) {
         await this.flashsalerepository.save({
@@ -124,33 +124,31 @@ export class FlashsalesService {
 
     if (startSale && endSale) {
       if (end.getTime() < start.getTime())
-        return {
-          code: 404,
-          message: 'Thời gian kết thúc không được nhỏ hơn thời gian bắt đầu',
-        };
+        throw new ConflictException(
+          'Thời gian kết thúc không được nhỏ hơn thời gian bắt đầu',
+        );
+
       const checkDate = await this.checkDate(startSale, endSale);
-      if (checkDate) {
-        await this.flashsalerepository.save({
-          ...flashsale,
-          ...updateFlashsaleDto,
-        });
-        return {
-          code: 200,
-          message: 'Update flashsale success',
-        };
-      } else {
-        return {
-          code: 404,
-          message: 'Không thể đặt flashsale vì trùng thời gian',
-        };
+      if (!checkDate) {
+        throw new ConflictException(
+          'Không thể đặt flashsale vì trùng thời gian',
+        );
       }
     }
+    await this.flashsalerepository.save({
+      ...flashsale,
+      ...updateFlashsaleDto,
+    });
+    return {
+      code: 200,
+      message: 'Update flashsale success',
+    };
   }
 
   async remove(id: string) {
     try {
       const flashsale = await this.flashsalerepository.findOne(id);
-      if (!flashsale) return { code: 404, message: 'flashsale not found' };
+      if (!flashsale) throw new NotFoundException('FlashSale not found');
       const flashSaleItems =
         await this.itemFlashsalesService.itemFlashsaleRepository.find({
           where: { flashsale },
@@ -166,8 +164,6 @@ export class FlashsalesService {
   }
 
   async checkDate(startSale: Date, endSale: Date) {
-    const start = new Date(startSale);
-    const end = new Date(endSale);
     const checkDate = await getConnection()
       .createQueryBuilder('flashsale', 'fl')
       .where(

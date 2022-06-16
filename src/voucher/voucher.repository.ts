@@ -1,4 +1,8 @@
-import { BadRequestException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { CreateVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
@@ -44,35 +48,32 @@ export class VoucherRepository extends Repository<Voucher> {
       const voucherStartTime = new Date(voucher.startTime);
       if (startTime && endTime) {
         if (start.getTime() < dateNow.getTime())
-          return {
-            code: 404,
-            message: 'Thời điểm bắt đầu không thể nhỏ hơn hiện tại',
-          };
+          throw new ConflictException(
+            'Thời điểm bắt đầu không được nhỏ hơn hiện tại',
+          );
 
         if (end.getTime() < start.getTime())
-          return {
-            code: 404,
-            message: 'Thời điểm kết thúc không thể nhỏ hơn thời điểm bắt đầu',
-          };
+          throw new ConflictException(
+            'Thời điểm kết thúc không được nhỏ hơn thời điểm bắt đầu',
+          );
       }
       if (startTime && !endTime) {
         if (start.getTime() < dateNow.getTime())
-          return { code: 404, message: 'Thời điểm bắt đầu không hợp lệ' };
+          throw new ConflictException(
+            'Thời điểm bắt đầu không được nhỏ hơn hiện tại',
+          );
         if (start.getTime() > voucherEndTime.getTime())
-          return {
-            code: 404,
-            message: 'Thời điểm bắt đầu không được vượt quá thời điểm kết thúc',
-          };
+          throw new ConflictException(
+            'Thời điểm bắt đầu không được vượt quá thời điểm kết thúc',
+          );
       }
       if (endTime && !startTime) {
         if (end.getTime() < dateNow.getTime())
-          return { code: 404, message: 'Thời điểm kết thúc không hợp lệ' };
+          throw new ConflictException('Thời điểm kết thúc không hợp lệ');
         if (end.getTime() < voucherStartTime.getTime())
-          return {
-            code: 404,
-            message:
-              'Thời điểm kết thúc không được diễn ra sớm hơn thời điểm kết thúc',
-          };
+          throw new ConflictException(
+            'Thời điểm kết thúc không được nhỏ hơn hiện tại',
+          );
       }
       const result = await this.save({ ...voucher, ...updateVoucherDto });
       if (result) return { code: 200, message: 'Update voucher successful' };
@@ -83,7 +84,7 @@ export class VoucherRepository extends Repository<Voucher> {
   async destroyVoucher(id: string) {
     try {
       const voucher = await this.findOne(id);
-      if (!voucher) return { code: 404, message: 'Voucher not found' };
+      if (!voucher) throw new NotFoundException('Voucher not found');
       const result = await this.softRemove(voucher);
       if (result) return { code: 200, message: 'voucher delete successful' };
     } catch (error) {

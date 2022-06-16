@@ -1,8 +1,8 @@
 import { Controller, Get, Param, UseFilters, UseGuards } from '@nestjs/common';
 import { OrderDetailService } from './order_detail.service';
-import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
-import { Roles } from 'src/authorization/roles.decorator';
-import { UserRole } from 'src/user/dto/user-roles.enum';
+import { HttpExceptionFilter } from '../filter/http-exception.filter';
+import { Roles } from '../authorization/roles.decorator';
+import { UserRole } from '../user/dto/user-roles.enum';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 

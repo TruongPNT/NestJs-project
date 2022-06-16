@@ -4,9 +4,9 @@ import { OrderController } from './order.controller';
 import { OrderRepository } from './order.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NestjsFormDataModule } from 'nestjs-form-data';
-import { UserModule } from 'src/user/user.module';
-import { OrderDetailModule } from 'src/order_detail/order_detail.module';
-import { VoucherModule } from 'src/voucher/voucher.module';
+import { UserModule } from '../user/user.module';
+import { OrderDetailModule } from '../order_detail/order_detail.module';
+import { VoucherModule } from '../voucher/voucher.module';
 
 @Module({
   imports: [
