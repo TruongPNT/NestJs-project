@@ -37,7 +37,7 @@ export class Product extends BaseEntity {
   @Column('integer')
   quantity: number;
 
-  @Column()
+  @Column({ default: null })
   product_img: string;
 
   @Column()

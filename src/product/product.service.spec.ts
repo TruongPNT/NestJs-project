@@ -1,8 +1,13 @@
+import { Response } from 'express';
+import { CategoryModule } from './../category/category.module';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Product } from './entities/product.entity';
+import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
+import { ProductsRepository } from './product.repository';
 import { ProductService } from './product.service';
+import { NestjsFormDataModule } from 'nestjs-form-data';
+import { Product } from './entities/product.entity';
+import { TypeOrmSQLITETestingModule } from '../../test/testDataset.seed';
+import { NotFoundException } from '@nestjs/common';
 
 const productData = {
   name: 'iphone 7',
@@ -10,103 +15,178 @@ const productData = {
   sell_price: 7000000,
   quantity: 100,
   description: 'Điện thoại Iphone 7',
+  categoryId: '55a81b6f-e940-4f13-8c9b-1e24c4b44309',
 };
 
+const categoryData = {
+  name: 'Test banner',
+};
 const mockId = '589b7a93-3026-47f8-bbc0-71b91dfd3eb0';
 
 const productArray = [productData, productData, productData];
 
 describe('ProductService', () => {
   let productService: ProductService;
-  const mockProductRegistry = {
-    createProduct: jest.fn().mockImplementation((dto) => dto),
-    save: jest.fn().mockImplementation((dto) => Promise.resolve({ ...dto })),
-    findAll: jest.fn().mockResolvedValue(productArray),
-    findOne: jest.fn().mockImplementation((id: string) =>
-      Promise.resolve({
-        name: 'iphone 7',
-        import_price: 6000000,
-        sell_price: 7000000,
-        quantity: 100,
-        description: 'Điện thoại Iphone 7',
-        id,
-      }),
-    ),
-    update: jest
-      .fn()
-      .mockImplementation((id: string, dto) => Promise.resolve({ ...dto })),
-    remove: jest
-      .fn()
-      .mockResolvedValue({ code: 200, message: 'Delete product successful' }),
+  let module: TestingModule;
+  let productRepository;
+  let productId;
+  const mockProductRepository = {};
+
+  const mockCategoryRepository = {
+    findOne: jest.fn().mockReturnValue(categoryData),
   };
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+  beforeAll(async () => {
+    module = await Test.createTestingModule({
+      imports: [
+        ...TypeOrmSQLITETestingModule(),
+        TypeOrmModule.forFeature([ProductsRepository]),
+        NestjsFormDataModule,
+        CategoryModule,
+      ],
       providers: [ProductService],
     })
-      .overrideProvider(ProductService)
-      .useValue(mockProductRegistry)
+      .overrideProvider(getRepositoryToken(Product))
+      .useValue(mockProductRepository)
       .compile();
+    productRepository = await module.resolve<ProductsRepository>(
+      ProductsRepository,
+    );
     productService = module.get<ProductService>(ProductService);
+  });
+
+  afterAll(async () => {
+    await module.close();
+  });
+  beforeEach(() => {
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
     expect(productService).toBeDefined();
   });
 
+  describe('create product', () => {
+    it('should return a product after create', async () => {
+      const product = await productService.createProduct(productData);
+      productId = product.data.id;
+      expect(product.code).toBe(200);
+      expect(product.data.name).toBe(productData.name);
+    });
+    it('should return an error when category not found', async () => {
+      try {
+        await productService.createProduct({
+          name: 'iphone 7',
+          import_price: 6000000,
+          sell_price: 7000000,
+          quantity: 100,
+          description: 'Điện thoại Iphone 7',
+          categoryId: mockId,
+        });
+      } catch (e) {
+        expect(e.message).toBe('Category not found');
+        expect(e.status).toEqual(404);
+      }
+    });
+    it('should return an error when do not have categoryID', async () => {
+      try {
+        await productService.createProduct({
+          name: 'iphone 7',
+          import_price: 6000000,
+          sell_price: 7000000,
+          quantity: 100,
+          description: 'Điện thoại Iphone 7',
+        });
+      } catch (e) {
+        expect(e.message).toBe('Category không được để trống');
+        expect(e.status).toEqual(409);
+      }
+    });
+  });
   describe('get list of Product', () => {
     it('should return an array of product', async () => {
-      const spy = jest.spyOn(productService, 'findAll');
       const products = await productService.findAll();
-      expect(spy).toBeCalled();
-      expect(products).toEqual(productArray);
+      expect(products).toBeTruthy();
     });
   });
-
-  describe('get one Product', () => {
+  describe('get a Product', () => {
     it('should return a product', async () => {
-      const spy = jest.spyOn(productService, 'findOne');
-      const product = await productService.findOne('a uuid');
-      expect(spy).toBeCalled();
-      expect(product).toEqual({
-        name: 'iphone 7',
-        import_price: 6000000,
-        sell_price: 7000000,
-        quantity: 100,
-        description: 'Điện thoại Iphone 7',
-        id: 'a uuid',
-      });
+      const products = await productService.findOne(productId);
+      expect(products.id).toBe(productId);
     });
-  });
-
-  describe('create Product', () => {
-    it('should create a product record and return it', async () => {
-      const spy = jest.spyOn(productService, 'createProduct');
-      const product = await productService.createProduct({ name: 'iPhone8' });
-      expect(spy).toBeCalled();
-      expect(product).toEqual({ name: 'iPhone8' });
+    it('should return an error when product not found', async () => {
+      try {
+        await productService.findOne(mockId);
+      } catch (error) {
+        expect(error.message).toBe('Product not found');
+        expect(error.status).toEqual(404);
+      }
     });
   });
   describe('update product', () => {
-    it('should call the update method', async () => {
-      const product = await productService.update('a uuid', {
-        name: 'iphone 7',
-        import_price: 6000000,
-        sell_price: 7000000,
-        quantity: 100,
-        description: 'Điện thoại Iphone 7',
+    it('should return a product after update', async () => {
+      const productUpdate = await productService.update(productId, {
+        name: 'test123',
       });
-      expect(product).toEqual(productData);
+      expect(productUpdate.code).toBe(200);
+      expect(productUpdate.data.name).toBe('test123');
+      expect(productUpdate.message).toBe('Update product successful');
+    });
+    it('should return an error when product not found', async () => {
+      try {
+        await productService.update(mockId, {
+          name: 'test123',
+        });
+      } catch (error) {
+        expect(error.message).toBe('Product not found');
+        expect(error.status).toEqual(404);
+      }
     });
   });
-
+  describe('get product sale and update sale status for product', () => {
+    it('should return a message success', async () => {
+      await productService.getItemWithFlashsale(productId);
+      expect(productService.getItemWithFlashsale).toBeCalled;
+    });
+    it('should return a message success', async () => {
+      await productService.updateIsSaleTrue(productId);
+      expect(productService.updateIsSaleTrue).toBeCalled;
+    });
+    it('should update sale status for product', async () => {
+      try {
+        await productService.updateIsSaleTrue(mockId);
+      } catch (error) {
+        expect(error.message).toBe('Product not found');
+        expect(error.status).toEqual(404);
+      }
+    });
+    it('should return a message success', async () => {
+      await productService.updateIsSaleFalse(productId);
+      expect(productService.updateIsSaleFalse).toBeCalled;
+    });
+    it('should update sale status for product', async () => {
+      try {
+        await productService.updateIsSaleFalse(mockId);
+      } catch (error) {
+        expect(error.message).toBe('Product not found');
+        expect(error.status).toEqual(404);
+      }
+    });
+  });
   describe('delete product', () => {
-    it('should call the delete method', async () => {
-      const product = await productService.remove('a uuid');
-      expect(product).toEqual({
-        code: 200,
-        message: 'Delete product successful',
-      });
+    it('should return a message success', async () => {
+      const product = await productService.remove(productId);
+      expect(product.code).toBe(200);
+      expect(product.message).toBe('Delete product successful');
+    });
+    it('should return an error when product not found', async () => {
+      try {
+        await productService.remove(productId);
+      } catch (error) {
+        expect(error.message).toBe('Product not found');
+        expect(error.status).toEqual(404);
+      }
     });
   });
 });

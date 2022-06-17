@@ -23,61 +23,60 @@ export class ProductService {
     createProductDto: CreateProductDto,
     file?: Express.Multer.File,
   ) {
-    try {
-      // gen barcode
-      const barcode = randomsString.generate({
-        length: 6,
-        charset: 'alphabetic',
-        capitalization: 'uppercase',
-      });
-      const {
-        categoryId,
-        name,
-        import_price,
-        sell_price,
-        description,
-        quantity,
-      } = createProductDto;
-      if (categoryId) {
-        const category = await this.categoryService.findOne(categoryId);
-        if (!category) throw new NotFoundException('Category not found');
-        const path = file.path;
-        const product = await this.productRepository.create({
-          name,
-          import_price,
-          sell_price,
-          description,
-          quantity,
-          barcode,
-          category: category,
-          product_img: path,
-        });
-        await this.productRepository.save(product);
-        return {
-          code: 200,
-          message: 'Create product successful',
-          data: product,
-        };
-      } else {
-        throw new ConflictException('Category không được để trống');
-      }
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestException('Sever error');
-    }
+    // gen barcode
+    const barcode = randomsString.generate({
+      length: 6,
+      charset: 'alphabetic',
+      capitalization: 'uppercase',
+    });
+    const {
+      categoryId,
+      name,
+      import_price,
+      sell_price,
+      description,
+      quantity,
+    } = createProductDto;
+    if (!categoryId)
+      throw new ConflictException('Category không được để trống');
+    const category = await this.categoryService.findOne(categoryId);
+    if (!category) throw new NotFoundException('Category not found');
+    let pathIMG = '';
+    if (file) pathIMG = file.path;
+    const product = await this.productRepository.create({
+      name,
+      import_price,
+      sell_price,
+      description,
+      quantity,
+      barcode,
+      category: category,
+      product_img: pathIMG,
+    });
+    await this.productRepository.save(product);
+    return {
+      code: 200,
+      message: 'Create product successful',
+      data: product,
+    };
   }
 
-  async findAll() {
-    return await this.productRepository.find();
+  findAll() {
+    return this.productRepository.find();
   }
 
   async findOne(id: string) {
     try {
-      const product = await this.findOne(id);
-      if (!product) throw new NotFoundException('Product not found');
+      const product = await this.productRepository.findOne({
+        relations: ['category'],
+        where: { id },
+      });
+      if (!product) {
+        throw new NotFoundException('Product not found');
+      }
       return product;
     } catch (error) {
-      throw new BadRequestException('Sever error');
+      return error.response;
     }
   }
 
@@ -86,46 +85,34 @@ export class ProductService {
     updateProductDto: UpdateProductDto,
     file?: Express.Multer.File,
   ) {
-    try {
-      const product = await this.productRepository.findOne({ id: id });
-      if (file) {
-        if (fs.existsSync(product.product_img)) {
-          fs.unlinkSync(`./${product.product_img}`);
-        }
-        product.product_img = file.path;
+    const product = await this.productRepository.findOne({ id: id });
+    if (!product) throw new NotFoundException('Product not found');
+    if (file) {
+      if (fs.existsSync(product.product_img)) {
+        fs.unlinkSync(`./${product.product_img}`);
       }
-      const { name, import_price, sell_price, description, quantity } =
-        updateProductDto;
-      product.name = name;
-      product.import_price = import_price;
-      product.sell_price = sell_price;
-      product.description = description;
-      product.quantity = quantity;
-      await this.productRepository.save(product);
-      return {
-        code: 200,
-        message: 'Update product successful',
-        data: product,
-      };
-    } catch (error) {
-      if (error.code === '22P02') {
-        return {
-          message: 'Product not found',
-        };
-      }
-      throw new BadRequestException('Sever error');
+      product.product_img = file.path;
     }
+    const { name, import_price, sell_price, description, quantity } =
+      updateProductDto;
+    product.name = name;
+    product.import_price = import_price;
+    product.sell_price = sell_price;
+    product.description = description;
+    product.quantity = quantity;
+    await this.productRepository.save(product);
+    return {
+      code: 200,
+      message: 'Update product successful',
+      data: product,
+    };
   }
 
   async remove(id: string) {
-    try {
-      const product = await this.productRepository.findOne(id);
-      if (!product) throw new NotFoundException('Product not found');
-      const result = await this.productRepository.softRemove(product);
-      if (result) return { code: 200, message: 'Delete product successful' };
-    } catch (error) {
-      throw new BadRequestException('Sever error');
-    }
+    const product = await this.productRepository.findOne(id);
+    if (!product) throw new NotFoundException('Product not found');
+    const result = await this.productRepository.softRemove(product);
+    if (result) return { code: 200, message: 'Delete product successful' };
   }
 
   async getItemWithFlashsale(id: string) {
@@ -151,32 +138,24 @@ export class ProductService {
   }
 
   async updateIsSaleTrue(id: string) {
-    try {
-      const product = await this.productRepository.findOne(id);
-      if (!product) throw new NotFoundException('Product not found');
-      if (!product.is_sale) {
-        await this.productRepository.save({
-          ...product,
-          is_sale: true,
-        });
-      }
-    } catch (error) {
-      throw new BadRequestException('Sever error');
+    const product = await this.productRepository.findOne(id);
+    if (!product) throw new NotFoundException('Product not found');
+    if (!product.is_sale) {
+      await this.productRepository.save({
+        ...product,
+        is_sale: true,
+      });
     }
   }
 
   async updateIsSaleFalse(id: string) {
-    try {
-      const product = await this.productRepository.findOne(id);
-      if (!product) throw new NotFoundException('Product not found');
-      if (product.is_sale) {
-        await this.productRepository.save({
-          ...product,
-          is_sale: false,
-        });
-      }
-    } catch (error) {
-      throw new BadRequestException('Sever error');
+    const product = await this.productRepository.findOne(id);
+    if (!product) throw new NotFoundException('Product not found');
+    if (product.is_sale) {
+      await this.productRepository.save({
+        ...product,
+        is_sale: false,
+      });
     }
   }
 }
