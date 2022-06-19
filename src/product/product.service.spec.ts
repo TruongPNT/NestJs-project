@@ -1,4 +1,3 @@
-import { Response } from 'express';
 import { CategoryModule } from './../category/category.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
@@ -7,7 +6,6 @@ import { ProductService } from './product.service';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { Product } from './entities/product.entity';
 import { TypeOrmSQLITETestingModule } from '../../test/testDataset.seed';
-import { NotFoundException } from '@nestjs/common';
 
 const productData = {
   name: 'iphone 7',
@@ -17,24 +15,13 @@ const productData = {
   description: 'Điện thoại Iphone 7',
   categoryId: '55a81b6f-e940-4f13-8c9b-1e24c4b44309',
 };
-
-const categoryData = {
-  name: 'Test banner',
-};
 const mockId = '589b7a93-3026-47f8-bbc0-71b91dfd3eb0';
-
-const productArray = [productData, productData, productData];
-
-describe('ProductService', () => {
+describe.skip('ProductService', () => {
   let productService: ProductService;
   let module: TestingModule;
   let productRepository;
   let productId;
   const mockProductRepository = {};
-
-  const mockCategoryRepository = {
-    findOne: jest.fn().mockReturnValue(categoryData),
-  };
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -57,10 +44,6 @@ describe('ProductService', () => {
 
   afterAll(async () => {
     await module.close();
-  });
-  beforeEach(() => {
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
   });
 
   it('should be defined', () => {

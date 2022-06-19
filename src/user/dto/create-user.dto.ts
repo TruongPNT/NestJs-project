@@ -6,8 +6,10 @@ import {
   IsEmail,
   IsNotEmpty,
   Length,
+  IsEnum,
 } from 'class-validator';
 import { Column } from 'typeorm';
+import { UserRole } from './user-roles.enum';
 
 export class CreateUserDto {
   @IsString()
@@ -27,6 +29,11 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Email is required' })
   @ApiProperty({ type: 'string' })
   email: string;
+
+  @IsEnum(UserRole)
+  @IsString()
+  @ApiProperty({ enum: UserRole, default: UserRole.USER })
+  role?: UserRole;
 
   @Column()
   @Length(6, 30, {

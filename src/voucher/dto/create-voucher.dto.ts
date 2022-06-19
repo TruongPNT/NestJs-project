@@ -6,38 +6,38 @@ import { VoucherType } from '../entities/voucher.entity';
 export class CreateVoucherDto {
   @IsString()
   @ApiProperty({ type: 'string' })
-  code: string;
+  code?: string;
 
   @IsString()
   @ApiProperty({ type: 'string' })
-  note: string;
+  note?: string;
 
   @IsNumber()
   @Type(() => Number)
   @ApiProperty({ type: 'number' })
-  discount: number;
+  discount?: number;
 
   @IsEnum(VoucherType)
   @IsString()
   @ApiProperty({ enum: VoucherType })
-  unit: VoucherType;
+  unit?: VoucherType;
 
   @IsInt()
   @Type(() => Number)
   @ApiProperty({ type: 'number' })
-  quantity: number;
+  quantity?: number;
 
   @IsDate()
   @Type(() => Date)
   @ApiProperty({
     type: 'string',
   })
-  startTime: Date;
+  startTime?: Date;
 
   @IsDate()
   @Type(() => Date)
   @ApiProperty({
     type: 'string',
   })
-  endTime: Date;
+  endTime?: Date;
 }

@@ -28,7 +28,7 @@ const mockProductService = {
   update: jest.fn(),
 };
 
-describe('ProductController', () => {
+describe.skip('ProductController', () => {
   let productController: ProductController;
   let productService: ProductService;
   beforeEach(async () => {
