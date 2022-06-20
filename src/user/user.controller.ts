@@ -59,6 +59,7 @@ export class UserController {
   // sửa thông tin người dùng (ADMIN)
   @Patch(':id')
   @Roles(UserRole.ADMIN)
+  @FormDataRequest()
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
   }
