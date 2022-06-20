@@ -1,4 +1,3 @@
-import { Response } from 'express';
 import { CategoryModule } from './../category/category.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
@@ -7,7 +6,6 @@ import { ProductService } from './product.service';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { Product } from './entities/product.entity';
 import { TypeOrmSQLITETestingModule } from '../../test/testDataset.seed';
-import { NotFoundException } from '@nestjs/common';
 
 const productData = {
   name: 'iphone 7',
