@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { IsString, IsNumber } from 'class-validator';
 export class CreateImgDetailDto {
   @ApiProperty({ type: 'string', format: 'binary' })
-  img_detail: Express.Multer.File;
+  img_detail?: Express.Multer.File;
 
   @IsNumber()
   @Type(() => Number)

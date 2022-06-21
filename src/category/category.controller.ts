@@ -52,7 +52,7 @@ export class CategoryController {
   )
   create(
     @Body() createCategoryDto: CreateCategoryDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
     return this.categoryService.create(createCategoryDto, file);
   }
@@ -89,7 +89,7 @@ export class CategoryController {
   update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
     return this.categoryService.update(id, updateCategoryDto, file);
   }

@@ -52,7 +52,7 @@ export class ImgDetailController {
   )
   create(
     @Body() createImgDetailDto: CreateImgDetailDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
     return this.imgDetailService.create(createImgDetailDto, file);
   }
@@ -89,7 +89,7 @@ export class ImgDetailController {
   update(
     @Param('id') id: string,
     @Body() updateImgDetailDto: UpdateImgDetailDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
     return this.imgDetailService.update(id, updateImgDetailDto, file);
   }

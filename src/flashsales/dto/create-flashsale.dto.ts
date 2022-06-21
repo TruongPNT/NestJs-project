@@ -21,23 +21,23 @@ export class FlashSaleItem {
 export class CreateFlashsaleDto {
   @IsString()
   @ApiProperty({ type: 'string' })
-  name: string;
+  name?: string;
 
   @IsString()
   @ApiProperty({ type: 'string' })
-  description: string;
+  description?: string;
 
   @IsDate()
   @Type(() => Date)
   @ApiProperty({ type: 'string' })
-  startSale: Date;
+  startSale?: Date;
 
   @IsDate()
   @Type(() => Date)
   @ApiProperty({ type: 'string' })
-  endSale: Date;
+  endSale?: Date;
 
   @IsArray()
   @ApiProperty({ type: [FlashSaleItem] })
-  flashSaleItem: FlashSaleItem[];
+  flashSaleItem?: FlashSaleItem[];
 }

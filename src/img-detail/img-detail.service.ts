@@ -12,7 +12,7 @@ export class ImgDetailService {
   ) {}
   async create(
     createImgDetailDto: CreateImgDetailDto,
-    file: Express.Multer.File,
+    file?: Express.Multer.File,
   ) {
     try {
       const path = file.path;
