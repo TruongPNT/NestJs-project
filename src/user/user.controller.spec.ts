@@ -27,17 +27,13 @@ const mockUserService = {
   updateForUser: jest.fn(),
 };
 
-describe.skip('UserController', () => {
+describe('UserController', () => {
   let userController: UserController;
   let userService: UserService;
-  let module: TestingModule;
+
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        ...TypeOrmSQLITETestingModule(),
-        TypeOrmModule.forFeature([UsersRepository]),
-        NestjsFormDataModule,
-      ],
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [NestjsFormDataModule],
       controllers: [UserController],
       providers: [UserService],
     })
@@ -46,10 +42,6 @@ describe.skip('UserController', () => {
       .compile();
     userController = module.get<UserController>(UserController);
     userService = module.get<UserService>(UserService);
-  });
-
-  afterAll(async () => {
-    await module.close();
   });
 
   describe('getById', () => {

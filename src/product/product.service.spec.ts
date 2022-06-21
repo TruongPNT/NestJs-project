@@ -16,7 +16,7 @@ const productData = {
   categoryId: '55a81b6f-e940-4f13-8c9b-1e24c4b44309',
 };
 const mockId = '589b7a93-3026-47f8-bbc0-71b91dfd3eb0';
-describe.skip('ProductService', () => {
+describe('ProductService', () => {
   let productService: ProductService;
   let module: TestingModule;
   let productRepository;

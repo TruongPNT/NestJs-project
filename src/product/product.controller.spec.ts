@@ -28,10 +28,10 @@ const mockProductService = {
   update: jest.fn(),
 };
 
-describe.skip('ProductController', () => {
+describe('ProductController', () => {
   let productController: ProductController;
   let productService: ProductService;
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ProductController],
       providers: [ProductService],

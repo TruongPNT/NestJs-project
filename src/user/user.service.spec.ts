@@ -18,7 +18,7 @@ const mockUserRepository = {};
 const mockId = '589b7a93-3026-47f8-bbc0-71b91dfd3eb0';
 let userCreate;
 
-describe.skip('UserService', () => {
+describe('UserService', () => {
   let userService: UserService;
   let module: TestingModule;
   let usersRepository;
@@ -58,6 +58,25 @@ describe.skip('UserService', () => {
         expect(error.response.error).toBe('Email already exists');
         expect(error.status).toEqual(400);
       }
+    });
+  });
+  describe('find all user', () => {
+    it('should return all users', async () => {
+      const users = await userService.findAll();
+      expect(users).toBeTruthy();
+    });
+  });
+  describe('find a user', () => {
+    it('should return a users', async () => {
+      const users = await userService.findOne(userCreate.id);
+      expect(users.full_name).toBe(userCreate.full_name);
+      expect(users.id).toBe(userCreate.id);
+    });
+    it('should return a users', async () => {
+      const users = await userService.findOneForUser(userCreate);
+      expect(users.user.full_name).toBe(userCreate.full_name);
+      expect(users.user.id).toBe(userCreate.id);
+      expect(users.code).toEqual(200);
     });
   });
   describe('update user', () => {

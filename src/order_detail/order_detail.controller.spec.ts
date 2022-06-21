@@ -13,17 +13,12 @@ const mockOrderDService = {
   findAll: jest.fn(),
 };
 
-describe.skip('OrderDetailController', () => {
+describe('OrderDetailController', () => {
   let orderDetailController: OrderDetailController;
   let orderDetailService: OrderDetailService;
-  let module: TestingModule;
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        ...TypeOrmSQLITETestingModule(),
-        TypeOrmModule.forFeature([OrderDetailRepository]),
-        NestjsFormDataModule,
-      ],
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [NestjsFormDataModule],
       controllers: [OrderDetailController],
       providers: [OrderDetailService],
     })
@@ -34,10 +29,6 @@ describe.skip('OrderDetailController', () => {
       OrderDetailController,
     );
     orderDetailService = module.get<OrderDetailService>(OrderDetailService);
-  });
-
-  afterAll(async () => {
-    await module.close();
   });
 
   describe('getById', () => {

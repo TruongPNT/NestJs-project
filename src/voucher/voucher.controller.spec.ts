@@ -16,17 +16,13 @@ const mockVoucherService = {
   update: jest.fn(),
 };
 
-describe.skip('VoucherController', () => {
+describe('VoucherController', () => {
   let voucherController: VoucherController;
   let voucherService: VoucherService;
   let module: TestingModule;
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        ...TypeOrmSQLITETestingModule(),
-        TypeOrmModule.forFeature([VoucherRepository]),
-        NestjsFormDataModule,
-      ],
+      imports: [NestjsFormDataModule],
       controllers: [VoucherController],
       providers: [VoucherService],
     })
@@ -35,10 +31,6 @@ describe.skip('VoucherController', () => {
       .compile();
     voucherController = module.get<VoucherController>(VoucherController);
     voucherService = module.get<VoucherService>(VoucherService);
-  });
-
-  afterAll(async () => {
-    await module.close();
   });
 
   describe('getById', () => {
